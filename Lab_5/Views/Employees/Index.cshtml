@@ -1,0 +1,103 @@
+﻿@using Lab_5.ViewModels
+@using Lab_5.Models
+@using Lab_5.ViewModels.Employees
+@model PaginationViewModel<Employee, EmployeesFilterViewModel, EmployeeSortViewModel>
+@addTagHelper *, Lab_5
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Список сотрудников</h1>
+
+<form method="get" class="mt-1">
+    <label class="form-inline">Имя: </label>
+    <input class="form-control" name="name" value="@Model.FilterViewModel.SelectedName" />
+
+    <label class="form-inline mt-1">Должность: </label>
+    <select class="form-control" name="postId" asp-items="Model.FilterViewModel.Posts"></select>
+
+    <input type="submit" value="Фильтр" class="btn btn-primary mt-2" />
+</form>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="Index"
+                   asp-route-page="@(Model.PageViewModel.PageNumber)"
+                   asp-route-sortOrder="@(Model.SortViewModel.NameSort)"
+                   asp-route-postId="@(Model.FilterViewModel.SelectedPostId)"
+                   asp-route-name="@(Model.FilterViewModel.SelectedName)">Имя</a>
+            </th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-page="@(Model.PageViewModel.PageNumber)"
+                   asp-route-sortOrder="@(Model.SortViewModel.SurnameSort)"
+                   asp-route-postId="@(Model.FilterViewModel.SelectedPostId)"
+                   asp-route-name="@(Model.FilterViewModel.SelectedName)">Фамилия</a>
+            </th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-page="@(Model.PageViewModel.PageNumber)"
+                   asp-route-sortOrder="@(Model.SortViewModel.MiddleNameSort)"
+                   asp-route-postId="@(Model.FilterViewModel.SelectedPostId)"
+                   asp-route-name="@(Model.FilterViewModel.SelectedName)">Отчество</a>
+            </th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-page="@(Model.PageViewModel.PageNumber)"
+                   asp-route-sortOrder="@(Model.SortViewModel.DepartmentSort)"
+                   asp-route-postId="@(Model.FilterViewModel.SelectedPostId)"
+                   asp-route-name="@(Model.FilterViewModel.SelectedName)">Отдел</a>
+            </th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-page="@(Model.PageViewModel.PageNumber)"
+                   asp-route-sortOrder="@(Model.SortViewModel.PostSort)"
+                   asp-route-postId="@(Model.FilterViewModel.SelectedPostId)"
+                   asp-route-name="@(Model.FilterViewModel.SelectedName)">Должность</a>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Items) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmployeeName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmployeeSurname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EmployeeMiddlename)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Department.DepartmentName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Post.PostName)
+            </td>
+            <td>
+                    @if (User.Identity.IsAuthenticated && (User.IsInRole("MainAdmin") || User.IsInRole("Admin")))
+                    {
+                <a asp-action="Edit" asp-route-id="@item.EmployeeId">Edit</a> 
+                    }
+                <a asp-action="Details" asp-route-id="@item.EmployeeId">Details</a> 
+                    @if (User.Identity.IsAuthenticated && (User.IsInRole("MainAdmin") || User.IsInRole("Admin")))
+                    {
+                <a asp-action="Delete" asp-route-id="@item.EmployeeId">Delete</a>
+                    }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+<page-link page-model="Model.PageViewModel" page-action="Index"
+           page-url-postId="@(Model.FilterViewModel.SelectedPostId)"
+           page-url-name="@(Model.FilterViewModel.SelectedName)"
+           page-url-sortOrder="@(Model.SortViewModel.Current)"></page-link>

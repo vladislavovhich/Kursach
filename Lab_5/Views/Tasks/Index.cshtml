@@ -1,0 +1,125 @@
+﻿@using Lab_5.ViewModels
+@using Lab_5.ViewModels.Tasks
+@using Lab_5.Models
+@model PaginationViewModel<Lab_5.Task, TaskFilterViewModel, TaskSortViewModel>
+
+@addTagHelper *, Lab_5
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+
+<h1>Список заданий</h1>
+
+<form method="get" class="mt-1">
+    <label class="form-inline">Проект: </label>
+    <select class="form-control" name="projectId" asp-items="Model.FilterViewModel.Projects"></select>
+
+    <label class="form-inline mt-1">Сотрудник: </label>
+    <select class="form-control" name="employeeId" asp-items="Model.FilterViewModel.Employees"></select>
+
+    <input type="submit" value="Фильтр" class="btn btn-primary mt-2" />
+</form>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <a asp-action="Index"
+                   asp-route-employeeId="@(Model.FilterViewModel.SelectedEmployeeId)"
+                   asp-route-page="@(Model.PageViewModel.PageNumber)"
+                   asp-route-sortOrder="@(Model.SortViewModel.BeginDateSort)"
+                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">Дата начала</a>
+            </th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-employeeId="@(Model.FilterViewModel.SelectedEmployeeId)"
+                   asp-route-page="@(Model.PageViewModel.PageNumber)"
+                   asp-route-sortOrder="@(Model.SortViewModel.EndDateSort)"
+                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">Дата конца</a>
+            </th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-employeeId="@(Model.FilterViewModel.SelectedEmployeeId)"
+                   asp-route-page="@(Model.PageViewModel.PageNumber)"
+                   asp-route-sortOrder="@(Model.SortViewModel.IsCompletedSort)"
+                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">Выполнен</a>
+            </th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-employeeId="@(Model.FilterViewModel.SelectedEmployeeId)"
+                   asp-route-page="@(Model.PageViewModel.PageNumber)"
+                   asp-route-sortOrder="@(Model.SortViewModel.FailedReasonSort)"
+                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">Причина невыполнения</a>
+            </th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-employeeId="@(Model.FilterViewModel.SelectedEmployeeId)"
+                   asp-route-page="@(Model.PageViewModel.PageNumber)"
+                   asp-route-sortOrder="@(Model.SortViewModel.CheckDateSort)"
+                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">Дата проверки</a>
+            </th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-employeeId="@(Model.FilterViewModel.SelectedEmployeeId)"
+                   asp-route-page="@(Model.PageViewModel.PageNumber)"
+                   asp-route-sortOrder="@(Model.SortViewModel.EmployeeSort)"
+                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">Сотрудник</a>
+            </th>
+            <th>
+                <a asp-action="Index"
+                   asp-route-employeeId="@(Model.FilterViewModel.SelectedEmployeeId)"
+                   asp-route-page="@(Model.PageViewModel.PageNumber)"
+                   asp-route-sortOrder="@(Model.SortViewModel.ProjectSort)"
+                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">Проект</a>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Items) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.BeginDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IsCompleted)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FailedReason)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CheckDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Employee.EmployeeName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Project.ProjectName)
+            </td>
+            <td>
+                    @if (User.Identity.IsAuthenticated && (User.IsInRole("MainAdmin") || User.IsInRole("Admin") || User.IsInRole("Employee")))
+                    {
+                <a asp-action="Edit" asp-route-id="@item.TaskId">Edit</a> 
+                    }
+                <a asp-action="Details" asp-route-id="@item.TaskId">Details</a> 
+                    @if (User.Identity.IsAuthenticated && (User.IsInRole("MainAdmin") || User.IsInRole("Admin")))
+                    {
+                <a asp-action="Delete" asp-route-id="@item.TaskId">Delete</a>
+                    }
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+<page-link page-model="Model.PageViewModel" page-action="Index"
+           page-url-employeeId="@(Model.FilterViewModel.SelectedEmployeeId)"
+           page-url-projectId="@(Model.FilterViewModel.SelectedProjectId)"
+           page-url-sortOrder="@(Model.SortViewModel.Current)"></page-link>

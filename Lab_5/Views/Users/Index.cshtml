@@ -1,0 +1,42 @@
+﻿@model IEnumerable<Lab_5.Models.User>
+@{
+    ViewBag.Title = "Список пользователей";
+}
+
+@if (User.Identity.IsAuthenticated && User.IsInRole("MainAdmin"))
+{
+    <a asp-action="Create">Добавить пользователя</a>
+}
+
+<table class="table">
+    <tr><th>Email</th><th>Год</th><th></th><th></th></tr>
+    @foreach (var user in Model)
+    {
+        <tr>
+            <td>@user.Email</td>
+            <td>@user.Year</td>
+            <td>
+                @if (User.Identity.IsAuthenticated && User.IsInRole("MainAdmin") && user.UserName != User.Identity.Name)
+                {
+                    <a class="btn btn-sm btn-primary" asp-action="Edit" asp-controller="Roles"  asp-route-userid="@user.Id">Права доступа</a>
+                }
+            </td>
+            <td>
+                <form asp-action="Delete" asp-route-id="@user.Id" method="post">
+                    @if (User.Identity.IsAuthenticated && (User.IsInRole("MainAdmin") || (User.IsInRole("Admin") && user.UserName == User.Identity.Name)))
+                    {
+                        <a class="btn btn-sm btn-primary" asp-action="ChangePassword" asp-route-id="@user.Id">Сменить пароль</a>
+                    }
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("MainAdmin") && user.UserName != User.Identity.Name)
+                    {
+                        <a class="btn btn-sm btn-primary" asp-action="Edit" asp-route-id="@user.Id">Изменить</a>
+
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            Удалить
+                        </button>
+                    }
+                </form>
+            </td>
+        </tr>
+    }
+</table>

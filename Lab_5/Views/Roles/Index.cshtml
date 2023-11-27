@@ -1,0 +1,18 @@
+﻿@model IEnumerable<Microsoft.AspNetCore.Identity.IdentityRole>
+
+<h2>Список ролей</h2>
+<table class="table">
+    @foreach (var role in Model)
+    {
+        <tr>
+            <td>@role.Name</td>
+            <td>
+                
+            </td>
+        </tr>
+    }
+</table>
+@if (User.Identity.IsAuthenticated && User.IsInRole("MainAdmin"))
+{
+    <a asp-action="UserList">Список пользователей</a>
+}
