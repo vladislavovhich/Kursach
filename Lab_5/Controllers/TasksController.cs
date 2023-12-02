@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Authorization;
 using Lab_5.ViewModels;
 using Lab_5.ViewModels.Tasks;
+using Lab_5.ViewModels.Employees;
+using SortState = Lab_5.ViewModels.Tasks.SortState;
 
 namespace Lab_5.Controllers
 {
@@ -21,6 +23,60 @@ namespace Lab_5.Controllers
         public TasksController(ApplicationDbContext context)
         {
             _context = context;
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> EmployeesTasks(int page = 1)
+        {
+            IQueryable<EmpProjViewModel> ts = (from item in _context.Tasks
+                                               join emp in _context.Employees on item.EmployeeId equals emp.EmployeeId
+                                               join project in _context.Projects on item.ProjectId equals project.ProjectId
+                                               where !project.IsStopped && !item.IsCompleted
+                                               orderby emp.EmployeeId
+                                               select new EmpProjViewModel
+                                               {
+                                                   Employee = emp,
+                                                   Project = project,
+                                                   Task = item,
+                                                   EndDate = item.EndDate
+                                               });
+            int pageSize = 10;
+
+            var count = ts.Count();
+            var items = ts.Skip((page - 1) * pageSize).Take(pageSize);
+
+            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
+            PaginationViewModel<EmpProjViewModel, EmployeesFilterViewModel, EmployeeSortViewModel> viewModel = new
+                (items, pageViewModel, null, null);
+
+            return View(viewModel);
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> EmployeesFailed(int page = 1)
+        {
+            IQueryable<EmpFailedViewModel> ts = _context.Tasks
+                .Include(t => t.Project)
+                .Include(t => t.Employee)
+                .Where(t => !t.Project.IsStopped && t.IsCompleted && t.FailedReason != "")
+                .Select(t => new EmpFailedViewModel
+                {
+                    Employee = t.Employee,
+                    Project = t.Project,
+                    Task = t,
+                    Delayed = (int)(DateTime.Now - t.EndDate).TotalDays
+                }) ;
+
+            int pageSize = 10;
+
+            var count = ts.Count();
+            var items = ts.Skip((page - 1) * pageSize).Take(pageSize);
+
+            PageViewModel pageViewModel = new PageViewModel(count, page, pageSize);
+            PaginationViewModel<EmpFailedViewModel, EmployeesFilterViewModel, EmployeeSortViewModel> viewModel = new
+                (items, pageViewModel, null, null);
+
+            return View(viewModel);
         }
 
         // GET: Tasks
@@ -117,7 +173,7 @@ namespace Lab_5.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin,MainAdmin")]
-        public async Task<IActionResult> Create([Bind("TaskId,BeginDate,EndDate,IsCompleted,FailedReason,CheckDate,ProjectId,EmployeeId")] Task task)
+        public async Task<IActionResult> Create([Bind("TaskId,BeginDate,EndDate,FailedReason,CheckDate,ProjectId,EmployeeId")] Task task)
         {
             if (ModelState.IsValid)
             {

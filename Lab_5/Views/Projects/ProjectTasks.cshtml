@@ -1,0 +1,56 @@
+﻿@using Lab_5.ViewModels
+@using Lab_5.ViewModels.Tasks
+@using Lab_5.Models
+@model PaginationViewModel<Lab_5.Task, TaskFilterViewModel, TaskSortViewModel>
+
+@addTagHelper *, Lab_5
+
+@{
+    ViewData["Title"] = "Задания проекта";
+}
+
+<h1>Все задания проекта @ViewBag.Project.ProjectName:</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(item => item.Items.First().TaskId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(item => item.Items.First().Employee)
+            </th>
+            <th>
+                @Html.DisplayNameFor(item => item.Items.First().Employee.Department)
+            </th>
+            <th>
+                @Html.DisplayNameFor(item => item.Items.First().IsCompleted)
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Items) {
+        <tr>
+            <td>
+                 <a asp-controller="Tasks" asp-action="Details" asp-route-id="@item.TaskId">
+                     @Html.DisplayFor(modelItem => item.TaskId)
+                 </a>
+               
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Employee.FullName)
+            </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Employee.Department.DepartmentName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IsCompleted)
+                </td>
+                
+        </tr>
+}
+    </tbody>
+</table>
+<page-link page-model="Model.PageViewModel" 
+page-action="ProjectTasks"
+         ></page-link>

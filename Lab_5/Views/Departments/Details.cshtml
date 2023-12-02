@@ -1,13 +1,13 @@
 ﻿@model Lab_5.Department
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Детали отделения";
 }
 
-<h1>Details</h1>
+<h1>Детали отделения</h1>
 
 <div>
-    <h4>Department</h4>
+    <h4>Отделение</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -25,6 +25,9 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.DepartmentId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    @if (User.Identity.IsAuthenticated && (User.IsInRole("MainAdmin") || User.IsInRole("Admin")))
+    {
+        <span><a asp-action="Edit" asp-route-id="@Model?.DepartmentId">Редактировать</a> |</span>
+    }
+    <a asp-action="Index">Назад</a>
 </div>

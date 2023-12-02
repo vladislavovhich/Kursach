@@ -7,15 +7,20 @@ namespace Lab_5.ViewModels.Tasks
     {
         public TaskFilterViewModel(List<Project> projects, List<Employee> employees, int projectId, int employeesId)
         {
-            projects.Insert(0, new Project { ProjectName = "Все", ProjectId = 0 });
+            if (projects != null)
+            {
+                projects.Insert(0, new Project { ProjectName = "Все", ProjectId = 0 });
+                Projects = new SelectList(projects, "ProjectId", "ProjectName");
+                SelectedProjectId = projectId;
+            }
 
-            Projects = new SelectList(projects, "ProjectId", "ProjectName");
-            SelectedProjectId = projectId;
+            if (employees != null)
+            {
+                employees.Insert(0, new Employee { EmployeeName = "Все", EmployeeId = 0 });
 
-            employees.Insert(0, new Employee { EmployeeName = "Все", EmployeeId = 0 });
-
-            Employees = new SelectList(employees, "EmployeeId", "EmployeeName");
-            SelectedEmployeeId = employeesId;
+                Employees = new SelectList(employees, "EmployeeId", "EmployeeName");
+                SelectedEmployeeId = employeesId;
+            }
         }
 
         public SelectList Projects { get; }

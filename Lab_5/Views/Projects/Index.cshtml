@@ -6,10 +6,10 @@
 @addTagHelper *, Lab_5
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Проекты";
 }
 
-<h1>Список проектов</h1>
+<h1>@ViewBag.Header</h1>
 
 <form method="get" class="mt-1">
     <label class="form-inline">Название: </label>
@@ -18,8 +18,14 @@
     <input type="submit" value="Фильтр" class="mt-2 btn btn-primary" />
 </form>
 
-<p>
-    <a asp-action="Create">Create New</a>
+
+<p class="mt-2">
+    @if (User.Identity.IsAuthenticated && (User.IsInRole("MainAdmin") || User.IsInRole("Admin")))
+    {
+        <span><a asp-action="Create">Добавить</a> |</span>
+    }
+
+    <a asp-action="RecentProjects">Недавние проекты</a>
 </p>
 <table class="table">
     <thead>
@@ -28,13 +34,18 @@
                 <a asp-action="Index"
                    asp-route-name="@(Model.FilterViewModel.SelectedName)"
                    asp-route-page="@(Model.PageViewModel.PageNumber)"
-                   asp-route-sortOrder="@(Model.SortViewModel.NameSort)">Название</a>
+                   asp-route-sortOrder="@(Model.SortViewModel.NameSort)">
+                   @Html.DisplayNameFor(item => item.Items.First().ProjectName)
+               
+               </a>
             </th>
             <th>
                  <a asp-action="Index"
                    asp-route-name="@(Model.FilterViewModel.SelectedName)"
                    asp-route-page="@(Model.PageViewModel.PageNumber)"
-                   asp-route-sortOrder="@(Model.SortViewModel.NameSort)">Выполнен</a>
+                   asp-route-sortOrder="@(Model.SortViewModel.NameSort)">
+                    @Html.DisplayNameFor(item => item.Items.First().IsStopped)
+               </a>
             </th>
             <th></th>
         </tr>
@@ -49,20 +60,21 @@
                 @Html.DisplayFor(modelItem => item.IsStopped)
             </td>
             <td>
+                    <a asp-action="ProjectTasks" asp-route-id="@item.ProjectId">Задания</a>
                     @if (User.Identity.IsAuthenticated && (User.IsInRole("MainAdmin") || User.IsInRole("Admin")))
                     {
-                <a asp-action="Edit" asp-route-id="@item.ProjectId">Edit</a> 
+                <a asp-action="Edit" asp-route-id="@item.ProjectId">Ред.</a> 
                     }
-                <a asp-action="Details" asp-route-id="@item.ProjectId">Details</a> 
+                <a asp-action="Details" asp-route-id="@item.ProjectId">Дет.</a> 
                     @if (User.Identity.IsAuthenticated && (User.IsInRole("MainAdmin") || User.IsInRole("Admin")))
                     {
-                <a asp-action="Delete" asp-route-id="@item.ProjectId">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.ProjectId">Уд.</a>
                     }
             </td>
         </tr>
 }
     </tbody>
 </table>
-<page-link page-model="Model.PageViewModel" page-action="Index"
+<page-link page-model="Model.PageViewModel" page-action="@(ViewBag.ActionName)"
            page-url-name="@(Model.FilterViewModel.SelectedName)"
            page-url-sortOrder="@(Model.SortViewModel.Current)"></page-link>

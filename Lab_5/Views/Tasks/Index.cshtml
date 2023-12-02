@@ -6,11 +6,11 @@
 @addTagHelper *, Lab_5
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Задания";
 }
 
 
-<h1>Список заданий</h1>
+<h1>Задания</h1>
 
 <form method="get" class="mt-1">
     <label class="form-inline">Проект: </label>
@@ -22,8 +22,13 @@
     <input type="submit" value="Фильтр" class="btn btn-primary mt-2" />
 </form>
 
-<p>
-    <a asp-action="Create">Create New</a>
+<p class="mt-2">
+    @if (User.Identity.IsAuthenticated && (User.IsInRole("MainAdmin") || User.IsInRole("Admin")))
+    { 
+            <span><a asp-action="Create">Добавить</a> |</span>
+    }
+    <a asp-action="EmployeesTasks">Текущие задания</a> |
+    <a asp-action="EmployeesFailed">Невыполненные задания</a>
 </p>
 <table class="table">
     <thead>
@@ -33,49 +38,66 @@
                    asp-route-employeeId="@(Model.FilterViewModel.SelectedEmployeeId)"
                    asp-route-page="@(Model.PageViewModel.PageNumber)"
                    asp-route-sortOrder="@(Model.SortViewModel.BeginDateSort)"
-                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">Дата начала</a>
+                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">
+                    @Html.DisplayNameFor(item => item.Items.First().BeginDate)
+               </a>
             </th>
             <th>
                 <a asp-action="Index"
                    asp-route-employeeId="@(Model.FilterViewModel.SelectedEmployeeId)"
                    asp-route-page="@(Model.PageViewModel.PageNumber)"
                    asp-route-sortOrder="@(Model.SortViewModel.EndDateSort)"
-                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">Дата конца</a>
+                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">
+                    @Html.DisplayNameFor(item => item.Items.First().EndDate)
+               </a>
             </th>
             <th>
                 <a asp-action="Index"
                    asp-route-employeeId="@(Model.FilterViewModel.SelectedEmployeeId)"
                    asp-route-page="@(Model.PageViewModel.PageNumber)"
                    asp-route-sortOrder="@(Model.SortViewModel.IsCompletedSort)"
-                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">Выполнен</a>
+                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">
+                    @Html.DisplayNameFor(item => item.Items.First().IsCompleted)
+               </a>
             </th>
             <th>
                 <a asp-action="Index"
                    asp-route-employeeId="@(Model.FilterViewModel.SelectedEmployeeId)"
                    asp-route-page="@(Model.PageViewModel.PageNumber)"
                    asp-route-sortOrder="@(Model.SortViewModel.FailedReasonSort)"
-                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">Причина невыполнения</a>
+                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">
+                    @Html.DisplayNameFor(item => item.Items.First().FailedReason)
+                </a>
             </th>
             <th>
                 <a asp-action="Index"
                    asp-route-employeeId="@(Model.FilterViewModel.SelectedEmployeeId)"
                    asp-route-page="@(Model.PageViewModel.PageNumber)"
                    asp-route-sortOrder="@(Model.SortViewModel.CheckDateSort)"
-                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">Дата проверки</a>
+                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">
+
+                    @Html.DisplayNameFor(item => item.Items.First().CheckDate)
+                
+                </a>
             </th>
             <th>
                 <a asp-action="Index"
                    asp-route-employeeId="@(Model.FilterViewModel.SelectedEmployeeId)"
                    asp-route-page="@(Model.PageViewModel.PageNumber)"
                    asp-route-sortOrder="@(Model.SortViewModel.EmployeeSort)"
-                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">Сотрудник</a>
+                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">
+                    @Html.DisplayNameFor(item => item.Items.First().Employee)
+                </a>
             </th>
             <th>
                 <a asp-action="Index"
                    asp-route-employeeId="@(Model.FilterViewModel.SelectedEmployeeId)"
                    asp-route-page="@(Model.PageViewModel.PageNumber)"
                    asp-route-sortOrder="@(Model.SortViewModel.ProjectSort)"
-                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">Проект</a>
+                   asp-route-projectId="@(Model.FilterViewModel.SelectedProjectId)">
+                    @Html.DisplayNameFor(item => item.Items.First().Project)
+                
+                </a>
             </th>
             <th></th>
         </tr>
@@ -107,12 +129,12 @@
             <td>
                     @if (User.Identity.IsAuthenticated && (User.IsInRole("MainAdmin") || User.IsInRole("Admin") || User.IsInRole("Employee")))
                     {
-                <a asp-action="Edit" asp-route-id="@item.TaskId">Edit</a> 
+                <a asp-action="Edit" asp-route-id="@item.TaskId">Ред.</a> 
                     }
-                <a asp-action="Details" asp-route-id="@item.TaskId">Details</a> 
+                <a asp-action="Details" asp-route-id="@item.TaskId">Дет.</a> 
                     @if (User.Identity.IsAuthenticated && (User.IsInRole("MainAdmin") || User.IsInRole("Admin")))
                     {
-                <a asp-action="Delete" asp-route-id="@item.TaskId">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.TaskId">Уд.</a>
                     }
             </td>
         </tr>

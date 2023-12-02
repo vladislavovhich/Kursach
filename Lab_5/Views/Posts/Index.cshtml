@@ -6,7 +6,7 @@
 @addTagHelper *, Lab_5
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Должности";
 }
 
 <h1>Список должностей</h1>
@@ -21,9 +21,12 @@
     <input type="submit" value="Фильтр" class="btn btn-primary mt-2" />
 </form>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (User.Identity.IsAuthenticated && (User.IsInRole("MainAdmin") || User.IsInRole("Admin")))
+{
+    <p class="mt-2">
+        <a asp-action="Create">Добавить</a>
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -32,14 +35,18 @@
                    asp-route-salary="@(Model.FilterViewModel.SelectedSalary)"
                    asp-route-page="@(Model.PageViewModel.PageNumber)"
                    asp-route-sortOrder="@(Model.SortViewModel.NameSort)"
-                   asp-route-postName="@(Model.FilterViewModel.SelectedPostName)">Название</a>
+                   asp-route-postName="@(Model.FilterViewModel.SelectedPostName)">
+                    @Html.DisplayNameFor(item => item.Items.First().PostName)
+                </a>
             </th>
             <th>
                 <a asp-action="Index"
                    asp-route-salary="@(Model.FilterViewModel.SelectedSalary)"
                    asp-route-page="@(Model.PageViewModel.PageNumber)"
                    asp-route-sortOrder="@(Model.SortViewModel.NameSort)"
-                   asp-route-postName="@(Model.FilterViewModel.SelectedPostName)">Зарплата</a>
+                   asp-route-postName="@(Model.FilterViewModel.SelectedPostName)">
+                    @Html.DisplayNameFor(item => item.Items.First().PostSalary)
+               </a>
             </th>
             <th></th>
         </tr>
@@ -56,12 +63,12 @@
             <td>
                     @if (User.Identity.IsAuthenticated && (User.IsInRole("MainAdmin") || User.IsInRole("Admin")))
                     {
-                <a asp-action="Edit" asp-route-id="@item.PostId">Edit</a> 
+                <a asp-action="Edit" asp-route-id="@item.PostId">Ред.</a> 
                     }
-                <a asp-action="Details" asp-route-id="@item.PostId">Details</a> 
+                <a asp-action="Details" asp-route-id="@item.PostId">Дет.</a> 
                     @if (User.Identity.IsAuthenticated && (User.IsInRole("MainAdmin") || User.IsInRole("Admin")))
                     {
-                <a asp-action="Delete" asp-route-id="@item.PostId">Delete</a>
+                <a asp-action="Delete" asp-route-id="@item.PostId">Уд.</a>
                     }
             </td>
         </tr>

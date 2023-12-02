@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Authorization;
 using Lab_5.ViewModels;
 using Lab_5.ViewModels.Employees;
+using Microsoft.Data.SqlClient;
+using System.Drawing.Printing;
 
 namespace Lab_5.Controllers
 {
