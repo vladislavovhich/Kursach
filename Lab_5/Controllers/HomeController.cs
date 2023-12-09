@@ -20,6 +20,26 @@ namespace Lab_5.Controllers
             return View();
         }
 
+        [Route("/Home/ErrorPage/{code:int}")]
+        public IActionResult ErrorPage(int code)
+        {
+
+            switch (code)
+            {
+                case 404:
+                    ViewBag.Message = "Страница не найдена";
+                    break;
+                case 403:
+                    ViewBag.Message = "Доступ запрещен";
+                    break;
+                default:
+                    ViewBag.Message = $"Произошла ошибка в выполнении запроса. Код ошибки: {code}";
+                    break;
+            }
+
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();

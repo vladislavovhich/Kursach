@@ -1,5 +1,6 @@
 ﻿using Faker;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Collections.Generic;
 
 namespace Lab_5.ViewModels.Employees
 {
@@ -12,6 +13,8 @@ namespace Lab_5.ViewModels.Employees
             Posts = new SelectList(posts, "PostId", "PostName");
             SelectedName = name;
             SelectedPostId = postId;
+
+            Posts.Where(x => x.Value == postId.ToString()).First().Selected = true;
         }
 
         public SelectList Posts { get; }

@@ -13,10 +13,10 @@
 
 <form method="get" class="mt-1">
     <label class="form-inline">Название: </label>
-    <input class="form-control" name="name" text="@(Model.FilterViewModel.SelectedDepartmentName)" />
+    <input class="form-control" name="name" value="@(Model.FilterViewModel.SelectedDepartmentName)" />
 
     <label class="form-inline mt-1">Номер: </label>
-    <input class="form-control" name="phone" text="@(Model.FilterViewModel.SelectedPhone)" />
+    <input class="form-control" name="phone" value="@(Model.FilterViewModel.SelectedPhone)" />
 
     <input type="submit" value="Фильтр" class="mt-2 btn btn-primary" />
 </form>
@@ -24,7 +24,7 @@
 @if (User.Identity.IsAuthenticated && (User.IsInRole("MainAdmin") || User.IsInRole("Admin")))
 {
     <p class="mt-2">
-        <a asp-action="Create">Create New</a>
+        <a asp-action="Create">Добавить</a>
     </p>
 }
 

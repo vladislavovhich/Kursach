@@ -10,89 +10,88 @@ using Microsoft.Extensions.Hosting;
 using System.Globalization;
 using System.Web.Optimization;
 
-internal class Program
+var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(connectionString));
+
+builder.Services.AddFoolProof();
+builder.Services.AddIdentity<User, IdentityRole>(opts =>
 {
-    private static void Main(string[] args)
-    {
-        var builder = WebApplication.CreateBuilder(args);
+    opts.Password.RequiredLength = 5;
+    opts.Password.RequireNonAlphanumeric = false;
+    opts.Password.RequireLowercase = false;
+    opts.Password.RequireUppercase = false;
+    opts.Password.RequireDigit = false;
+})
+          .AddRoleManager<RoleManager<IdentityRole>>()
+    .AddUserManager<UserManager<User>>()
+.AddEntityFrameworkStores<ApplicationDbContext>();
 
-        // Add services to the container.
-        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.AccessDeniedPath = new PathString("/Home/ErrorPage/403");
+});
 
-        builder.Services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlServer(connectionString));
+builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-        builder.Services.AddFoolProof();
-        builder.Services.AddIdentity<User, IdentityRole>(opts =>
-        {
-            opts.Password.RequiredLength = 5;
-            opts.Password.RequireNonAlphanumeric = false;
-            opts.Password.RequireLowercase = false;
-            opts.Password.RequireUppercase = false;
-            opts.Password.RequireDigit = false;
-        })
-                  .AddRoleManager<RoleManager<IdentityRole>>()
-            .AddUserManager<UserManager<User>>()
-        .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddControllersWithViews();
 
-        builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.Cookie.Name = ".Projects.Session";
+    options.IdleTimeout = TimeSpan.FromSeconds(3600);
+    options.Cookie.IsEssential = true;
+});
+var app = builder.Build();
 
-        builder.Services.AddControllersWithViews();
 
-        builder.Services.AddDistributedMemoryCache();
-        builder.Services.AddSession(options =>
-        {
-            options.Cookie.Name = ".Projects.Session";
-            options.IdleTimeout = TimeSpan.FromSeconds(3600);
-            options.Cookie.IsEssential = true;
-        });
-        var app = builder.Build();
-
-        
-        var supportedCultures = new[]
-        {
+var supportedCultures = new[]
+{
             new CultureInfo("en-US"),
         };
 
-        app.UseRequestLocalization(new RequestLocalizationOptions
-        {
-            DefaultRequestCulture = new RequestCulture("en-US"),
-            SupportedCultures = supportedCultures,
-            SupportedUICultures = supportedCultures,
-        });
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("en-US"),
+    SupportedCultures = supportedCultures,
+    SupportedUICultures = supportedCultures,
+});
 
 
-        if (app.Environment.IsDevelopment())
-        {
-            app.UseMigrationsEndPoint();
-        }
-        else
-        {
-            app.UseExceptionHandler("/Home/Error");
-
-            app.UseHsts();
-        }
-
-        app.UseHttpsRedirection();
-        app.UseStaticFiles();
-
-        app.UseRouting();
-        app.UseSession();
-        app.UseResponseCaching();
-
-        
-        app.UseDbInitializer();
-
-        app.UseAuthentication();
-        app.UseAuthorization();
-
-        
-
-
-        app.MapControllerRoute(
-            name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}");
-
-        app.Run();
-    }
+if (app.Environment.IsDevelopment())
+{
+    app.UseMigrationsEndPoint();
 }
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseRouting();
+app.UseSession();
+app.UseResponseCaching();
+
+
+app.UseDbInitializer();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+
+app.UseStatusCodePagesWithReExecute("/Home/ErrorPage/{0}");
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+app.Run();

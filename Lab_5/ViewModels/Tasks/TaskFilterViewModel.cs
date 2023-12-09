@@ -12,6 +12,8 @@ namespace Lab_5.ViewModels.Tasks
                 projects.Insert(0, new Project { ProjectName = "Все", ProjectId = 0 });
                 Projects = new SelectList(projects, "ProjectId", "ProjectName");
                 SelectedProjectId = projectId;
+
+                Projects.Where(x => x.Value == projectId.ToString()).First().Selected = true;
             }
 
             if (employees != null)
@@ -20,6 +22,8 @@ namespace Lab_5.ViewModels.Tasks
 
                 Employees = new SelectList(employees, "EmployeeId", "EmployeeName");
                 SelectedEmployeeId = employeesId;
+
+                Employees.Where(x => x.Value == employeesId.ToString()).First().Selected = true;
             }
         }
 
