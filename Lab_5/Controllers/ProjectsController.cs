@@ -105,7 +105,7 @@ namespace Lab_5.Controllers
             IQueryable<Project> projects = _context.Projects.Include(p => p.Tasks)
                 .Where(p => !p.IsStopped && 
                 p.Tasks.Where(t => !t.IsCompleted
-                && t.BeginDate.Year == time.Year && t.BeginDate.Month >= time.Month - 1).Count() != 0);
+                && t.BeginDate.Year == time.Year && t.BeginDate.Month <= time.Month - 1).Count() != 0);
 
             int pageSize = 10;
 

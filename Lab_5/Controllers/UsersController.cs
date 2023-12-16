@@ -1,5 +1,6 @@
 ﻿using Lab_5.Models;
 using Lab_5.ViewModels.Users;
+using Microsoft.Ajax.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -93,6 +94,13 @@ namespace Lab_5.Controllers
             User user = await _userManager.FindByIdAsync(id);
             if (user != null)
             {
+                var roles = await HttpContext.RequestServices.GetRequiredService<UserManager<User>>().GetRolesAsync(user);
+                
+                if (roles.Contains("MainAdmin"))
+                {
+                    return RedirectToAction("Index");
+                }
+
                 IdentityResult result = await _userManager.DeleteAsync(user);
             }
             return RedirectToAction("Index");

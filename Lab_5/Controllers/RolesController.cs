@@ -45,18 +45,6 @@ namespace Lab_5.Controllers
             return View(name);
         }
 
-        [HttpPost]
-        [Authorize(Roles = "MainAdmin")]
-        public async Task<IActionResult> Delete(string id)
-        {
-            IdentityRole role = await _roleManager.FindByIdAsync(id);
-            if (role != null)
-            {
-                IdentityResult result = await _roleManager.DeleteAsync(role);
-            }
-            return RedirectToAction("Index");
-        }
-
         [Authorize(Roles = "MainAdmin")]
         public IActionResult UserList() => View(_userManager.Users.ToList());
 
@@ -70,6 +58,11 @@ namespace Lab_5.Controllers
                 // получем список ролей пользователя
                 var userRoles = await _userManager.GetRolesAsync(user);
                 var allRoles = _roleManager.Roles.ToList();
+
+                if (userRoles.Contains("MainAdmin"))
+                {
+                    return RedirectToAction("UserList");
+                }
                 ChangeRoleViewModel model = new ChangeRoleViewModel
                 {
                     UserId = user.Id,
@@ -93,6 +86,12 @@ namespace Lab_5.Controllers
             {
                 // получем список ролей пользователя
                 var userRoles = await _userManager.GetRolesAsync(user);
+
+                if (userRoles.Contains("MainAdmin"))
+                {
+                    return RedirectToAction("UserList");
+                }
+
                 // получаем все роли
                 var allRoles = _roleManager.Roles.ToList();
                 // получаем список ролей, которые были добавлены
